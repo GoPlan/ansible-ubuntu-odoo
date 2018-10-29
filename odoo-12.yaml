@@ -1,0 +1,55 @@
+- hosts: odoo
+  remote_user: ubuntu
+  become: yes
+  tasks:
+    - name: Update and upgrade Ubuntu
+      become: yes
+      become_method: sudo
+      apt:
+        update_cache: yes
+        upgrade: dist
+    - name: Install essentials
+      become: yes
+      become_method: sudo
+      apt:
+        name: "{{packages}}"
+      vars:
+        packages:
+          - tree
+          - htop
+          - vim
+    - name: Upload Odoo debian package
+      copy:
+        src:  ./installers
+        dest: ./
+    - name: Add Pg96 deb repository
+      become: yes
+      become_method: sudo
+      apt_repository:
+        repo: deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main
+    - name: Add Pg96 validation key
+      become: yes
+      become_method: sudo
+      apt_key:
+        url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    - name: Install Pg96
+      become: yes
+      become_method: sudo
+      apt:
+        update_cache: yes
+        name: postgresql-9.6
+    - name: Install Odoo 12
+      become: yes
+      become_method: sudo
+      apt:
+        deb: ./installers/odoo_12.0+e.latest_all.deb
+    - name: Install Odoo 12 dependencies
+      become: yes
+      become_method: sudo
+      apt:
+        force: true
+    - name: Install Odoo 12
+      become: yes
+      become_method: sudo
+      apt:
+        deb: ./installers/odoo_12.0+e.latest_all.deb

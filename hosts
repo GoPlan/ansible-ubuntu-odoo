@@ -1,0 +1,2 @@
+[odoo]
+odoo-12.local ansible_user=ubuntu
